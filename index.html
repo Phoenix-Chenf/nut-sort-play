@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f2e8">
+  <meta name="description" content="经典、迷雾、顺序收集，三种螺母整理玩法。不限次数，每一步都能撤回。">
+  <title>理一理 · 螺母整理</title>
+  <link rel="stylesheet" href="./style.css?v=6">
+</head>
+<body>
+  <main class="workbench">
+    <header class="page-header">
+      <div><h1>理一理<span>螺母整理</span></h1></div>
+      <button id="help-open" class="text-button help-button" type="button" aria-label="查看玩法说明"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.6 2.6 0 0 1 5 .8c0 1.8-2.5 2-2.5 3.7M12 17h.01"/></svg><span>玩法</span></button>
+    </header>
+
+    <nav class="mode-tabs" aria-label="选择玩法">
+      <button type="button" data-mode="classic" aria-pressed="true">经典整理</button>
+      <button type="button" data-mode="fog" aria-pressed="false">迷雾整理</button>
+      <button type="button" data-mode="collect" aria-pressed="false">顺序收集</button>
+    </nav>
+    <p id="mode-hint" class="mode-hint"></p>
+    <section class="game" aria-label="螺母整理棋盘">
+      <div class="level-bar">
+        <button id="level-open" class="level-selector" type="button" aria-haspopup="dialog"><span id="level-label">第 1 / 100 关</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg></button>
+        <div class="play-stats"><div class="time-count" aria-label="本次计时"><span id="elapsed">00:00</span><span>用时</span></div><div class="move-count"><span id="moves">0</span><span>步</span></div></div>
+      </div>
+      <div class="level-detail"><h2 id="level-name"></h2><span id="level-difficulty"></span></div>
+      <section id="collection-panel" class="collection-panel" aria-label="按顺序收集颜色" hidden>
+        <div class="collection-heading"><span id="collection-current"></span><span id="collection-progress"></span></div>
+        <div id="collection-order" class="collection-order" role="list" aria-label="从左到右依次收集"></div>
+      </section>
+      <div class="board-toolbar"><div class="feedback-wrap"><p id="feedback" role="status" aria-live="polite">先点一根螺柱，再点同色或空柱。</p></div><button id="zoom" class="text-button zoom-button" type="button" aria-pressed="false" aria-label="切换放大棋盘"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6M7 10h6m-3-3v6"/></svg><span id="zoom-label">放大</span></button></div>
+      <section id="advice-panel" class="advice-panel" aria-label="局面检查与提示" hidden>
+        <p id="advice-text" role="status" aria-live="polite"></p>
+        <div class="advice-actions"><button id="recover" type="button" class="advice-action" hidden>撤回到可解处</button></div>
+      </section>
+      <div id="game-board" class="game-board" aria-label="螺柱"></div>
+      <section id="success" class="success" aria-label="通关结算" hidden>
+        <div class="settlement-heading"><div class="success-copy"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg><div><h3>这一关完成了。</h3><p id="success-message"></p></div></div><button id="next-level" class="next-button" type="button">下一关<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button></div>
+        <dl class="result-grid"><div><dt id="result-time-label">本次用时</dt><dd id="result-time">—</dd></div><div><dt>搬运步数</dt><dd id="result-moves">—</dd></div><div class="result-assist"><dt>辅助空柱</dt><dd id="result-rods">—</dd></div></dl>
+        <h4 class="best-heading">本关最好成绩</h4>
+        <dl class="best-list"><div><dt>未加柱</dt><dd id="best-standard">暂无完整成绩</dd></div><div><dt>加柱辅助</dt><dd id="best-assisted">暂无完整成绩</dd></div></dl>
+        <p id="result-note" class="result-note"></p>
+      </section>
+      <div class="rule-line"><span class="rule-dot" aria-hidden="true"></span>同色才能叠放 · 空柱可以中转</div>
+    </section>
+
+    <footer class="game-controls">
+      <button id="undo" class="control-button undo-button" type="button" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5-6 5 6 5M3 10h11a6 6 0 0 1 0 12"/></svg><span>撤回一步</span></button>
+      <button id="hint" class="control-button hint-button" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 15a7 7 0 1 1 8 0v3H8v-3Zm1 6h6M9 18h6"/></svg><span id="hint-label">提示</span></button>
+      <button id="add-rod" class="control-button add-rod-button" type="button" aria-label="免费加一根空柱"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h6v14H7zM5 19h10M17 9h6m-3-3v6"/></svg><span>加空柱</span></button>
+      <button id="restart" class="control-button restart-button" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M19.6 11a8 8 0 1 0-1.3 6M20 12l-1-5"/></svg><span>重新整理</span></button>
+    </footer>
+    <p class="gentle-note">不限次数，不着急。进度会自动保存在这台设备。</p>
+    <noscript><p class="load-error">请开启浏览器的 JavaScript，才能开始整理。</p></noscript>
+  </main>
+
+  <dialog id="level-dialog" aria-labelledby="level-dialog-title">
+    <div class="dialog-heading"><h2 id="level-dialog-title">挑一关，慢慢来。</h2><button class="icon-button" type="button" data-close-dialog aria-label="关闭选关"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+    <p id="level-intro" class="dialog-intro">全部关卡都可以直接选。</p>
+    <div id="level-list" class="level-list"></div>
+    <p class="dialog-footnote">打勾表示已通过。切换玩法、刷新页面，也会保留进度和撤回记录。</p>
+  </dialog>
+
+  <dialog id="help-dialog" aria-labelledby="help-title">
+    <div class="dialog-heading"><h2 id="help-title">把同色，理到一起。</h2><button class="icon-button" type="button" data-close-dialog aria-label="关闭玩法说明"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+    <div id="guide-animation" class="guide-animation" aria-hidden="true"></div>
+    <ol class="help-steps"><li><span>1</span><p>点一根螺柱，拿起顶部连续同色的一组。</p></li><li><span>2</span><p>点<strong>顶部同色</strong>、还有空位的柱子。空柱可以中转。</p></li><li><span>3</span><p id="help-mode-rule">把每种颜色装满一根柱子，就完成了。</p></li></ol>
+    <p id="help-mode-detail" class="help-mode-detail"></p>
+    <p class="help-assist">底部随时可以免费加空柱，不占搬运步数；“提示”只标出下一步。通关后会显示用时、加柱情况和本关最好成绩。后台、玩法与选关暂停计时；未加柱和加柱辅助分别记录。</p>
+    <p class="help-reassurance">点错不扣次数，随时可以撤回；再点已选柱就能取消。</p>
+    <button id="help-start" class="primary-button" type="button">我来理一理</button>
+  </dialog>
+  <div id="animation-layer" class="animation-layer" aria-hidden="true"></div>
+  <script type="module" src="./app.js?v=6"></script>
+</body>
+</html>
